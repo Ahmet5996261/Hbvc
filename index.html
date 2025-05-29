@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HBVC Namaz Vakitleri - Duisburg Hochfeld</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f9f9f9;
+    color: #1b3e2e;
+    transition: background-color 0.4s, color 0.4s;
+  }
+  body.dark {
+    background-color: #121a13;
+    color: #c9d6c2;
+  }
+  main {
+    max-width: 480px;
+    margin: 2rem auto 3rem;
+    padding: 0 1rem;
+  }
+  .prayer-times {
+    background: #d9f0d9;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgb(27 62 46 / 0.25);
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 2rem;
+  }
+  body.dark .prayer-times {
+    background: #26422c;
+    box-shadow: 0 4px 12px rgb(54 92 61 / 0.5);
+  }
+  .prayer-times h2 {
+    text-align: center;
+    font-weight: 700;
+    color: #1b3e2e;
+    margin-bottom: 1.2rem;
+    font-size: 1.7rem;
+  }
+  body.dark .prayer-times h2 {
+    color: #c4d5b8;
+  }
+  .prayer-time {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-weight: 600;
+    font-size: 1.15rem;
+    border-bottom: 1px solid #a8d5a8;
+  }
+  .prayer-time:last-child {
+    border-bottom: none;
+  }
+  body.dark .prayer-time {
+    border-color: #5b7a56;
+  }
+  .countdown {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #1b3e2e;
+    text-align: center;
+    margin-bottom: 1.8rem;
+    user-select: none;
+  }
+  body.dark .countdown {
+    color: #aacc99;
+  }
+  .clock {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .hadith {
+    background-color: #1b3e2e;
+    color: #d9f0d9;
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    font-style: italic;
+    font-size: 1.05rem;
+    box-shadow: 0 3px 10px rgb(27 62 46 / 0.6);
+    user-select: none;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  body.dark .hadith {
+    background-color: #2f5b33;
+    color: #e2f1d6;
+    box-shadow: 0 3px 10px rgb(54 92 61 / 0.8);
+  }
+  .hadith strong {
+    font-weight: 700;
+    color: #a8d5a8;
+  }
+  #toggleCountdownBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    background-color: #1b3e2e;
+    color: #d9f0d9;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    display: none;
+    box-shadow: 0 4px 12px rgba(27, 62, 46, 0.4);
+    transition: background-color 0.3s;
+  }
+  #toggleCountdownBtn:hover {
+    background-color: #26422c;
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="clock" id="current-time">Saat Yükleniyor...</div>
+  <div class="prayer-times" aria-label="Namaz Vakitleri">
+    <h2>HBVC Namaz Vakitleri</h2>
+    <div class="prayer-time"><span>Sabah</span><span id="imsak">03:44</span></div>
+    <div class="prayer-time"><span>İmsak</span><span id="imsak2">05:17</span></div>
+    <div class="prayer-time"><span>Öğlen</span><span id="dhuhr">13:36</span></div>
+    <div class="prayer-time"><span>İkindi</span><span id="asr">17:53</span></div>
+    <div class="prayer-time"><span>Akşam</span><span id="maghrib">21:45</span></div>
+    <div class="prayer-time"><span>Yatsı</span><span id="isha">23:07</span></div>
+  </div>
+  <div class="countdown" id="countdown">Geri Sayım Yükleniyor...</div>
+  <div class="hadith" aria-label="Günün Hadisi">
+    <strong>Günün Hadisi:</strong> <span id="hadith-text">“İnsanların en hayırlısı, insanlara en faydalı olandır.” (Hz. Muhammed)</span>
+  </div>
+  <button id="toggleCountdownBtn" title="Geri sayımı aç/kapat">Geri Sayımı Aç/Kapat</button>
+</main>
+<script>
+  const currentTimeElem = document.getElementById('current-time');
+  function updateClock() {
+    const now = new Date();
+    currentTimeElem.textContent = now.toLocaleTimeString('tr-TR', { hour12: false });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  const prayerTimesRaw = {
+    sabah: "03:44",
+    imsak: "05:17",
+    dhuhr: "13:36",
+    asr: "17:53",
+    maghrib: "21:45",
+    isha: "23:07"
+  };
+
+  const prayerOrder = ["sabah", "imsak", "dhuhr", "asr", "maghrib", "isha"];
+  const prayerNamesTR = {
+    sabah: "Sabah", imsak: "İmsak", dhuhr: "Öğlen",
+    asr: "İkindi", maghrib: "Akşam", isha: "Yatsı"
+  };
+
+  const countdownElem = document.getElementById("countdown");
+  let countdownActive = true;
+
+  function getPrayerDate(timeStr, dayOffset = 0) {
+    const [h,m] = timeStr.split(":").map(Number);
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset, h, m, 0, 0);
+  }
+
+  function updateCountdown(){
+    if(!countdownActive){
+      countdownElem.textContent = "Geri sayım kapalı.";
+      return;
+    }
+    const now = new Date();
+    let todayPrayers = prayerOrder.map(key => ({
+      key,
+      time: getPrayerDate(prayerTimesRaw[key])
+    }));
+    if(now > todayPrayers[todayPrayers.length - 1].time){
+      todayPrayers = prayerOrder.map(key => ({
+        key,
+        time: getPrayerDate(prayerTimesRaw[key], 1)
+      }));
+    }
+    let nextPrayer = todayPrayers.find(p => p.time > now);
+    if(!nextPrayer){
+      countdownElem.textContent = "Namaz vakitleri henüz belirlenmedi.";
+      return;
+    }
+    const diffMs = nextPrayer.time - now;
+    const diffSec = Math.floor(diffMs / 1000);
+    const h = Math.floor(diffSec / 3600);
+    const m = Math.floor((diffSec % 3600) / 60);
+    const s = diffSec % 60;
+    countdownElem.textContent = `Sonraki Namaz: ${prayerNamesTR[nextPrayer.key]} | Geri Sayım: ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  const toggleBtn = document.getElementById('toggleCountdownBtn');
+  toggleBtn.addEventListener('click', () => {
+    countdownActive = !countdownActive;
+    updateCountdown();
+    console.log(`Geri sayım ${countdownActive ? "açıldı" : "kapandı"}`);
+  });
+
+  let tapCount = 0;
+  let tapTimeout = null;
+  document.body.addEventListener('touchstart', () => {
+    tapCount++;
+    if(tapCount === 3){
+      toggleBtn.style.display = toggleBtn.style.display === "none" || toggleBtn.style.display === "" ? "block" : "none";
+      tapCount = 0;
+      if(tapTimeout){
+        clearTimeout(tapTimeout);
+        tapTimeout = null;
+      }
+    } else {
+      if(tapTimeout){
+        clearTimeout(tapTimeout);
+      }
+      tapTimeout = setTimeout(() => { tapCount = 0; }, 600);
+    }
+  });
+</script>
+</body>
+</html>
