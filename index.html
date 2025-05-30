@@ -1,269 +1,126 @@
-<script>
-(() => {
-  // --- Sabitler ve Veriler ---
-
-  const langData = {
-    tr: {
-      prayerTitle: "HBVC Namaz Vakitleri (Duisburg Hochfeld - 31 Mayıs 2025)",
-      hadith: "Hz. Peygamber (s.a.v) buyurdu ki: <strong>“Kolaylaştırınız, zorlaştırmayınız; müjdeleyiniz, nefret ettirmeyiniz.”</strong> (Buhari)",
-      countdownLabel: "Dua Vakitlerine Geri Sayım:",
-      quizTitle: "Günün Quizi",
-      countdownBtnShow: "Geri Sayımı Göster",
-      countdownBtnHide: "Geri Sayımı Gizle",
-      prayers: [
-        {name: "İmsak", time: "03:15"},
-        {name: "Güneş", time: "05:30"},
-        {name: "Öğle", time: "13:00"},
-        {name: "İkindi", time: "17:00"},
-        {name: "Akşam", time: "20:15"},
-        {name: "Yatsı", time: "22:00"}
-      ],
-      quiz: [
-        {
-          question: "Namaz kaç vakittir?",
-          options: ["3", "5", "7", "4"],
-          answer: 1
-        },
-        {
-          question: "Kıble hangi yöne doğrudur?",
-          options: ["Kuzey", "Güney", "Kıble", "Batı"],
-          answer: 2
-        },
-        {
-          question: "Oruç hangi ayda tutulur?",
-          options: ["Ramazan", "Şevval", "Zilhicce", "Recep"],
-          answer: 0
-        }
-      ]
-    },
-    de: {
-      prayerTitle: "HBVC Gebetszeiten (Duisburg Hochfeld - 31. Mai 2025)",
-      hadith: "Der Prophet (s.a.v) sagte: <strong>„Erleichtert und erschwert nicht; freut euch und macht keinen Hass.“</strong> (Bukhari)",
-      countdownLabel: "Countdown bis zum Gebetsruf:",
-      quizTitle: "Tägliches Quiz",
-      countdownBtnShow: "Countdown anzeigen",
-      countdownBtnHide: "Countdown ausblenden",
-      prayers: [
-        {name: "Fajr", time: "03:15"},
-        {name: "Sonnenaufgang", time: "05:30"},
-        {name: "Dhuhr", time: "13:00"},
-        {name: "Asr", time: "17:00"},
-        {name: "Maghrib", time: "20:15"},
-        {name: "Isha", time: "22:00"}
-      ],
-      quiz: [
-        {
-          question: "Wie viele Gebetszeiten gibt es?",
-          options: ["3", "5", "7", "4"],
-          answer: 1
-        },
-        {
-          question: "In welche Richtung zeigt die Qibla?",
-          options: ["Norden", "Süden", "Qibla", "Westen"],
-          answer: 2
-        },
-        {
-          question: "In welchem Monat wird gefastet?",
-          options: ["Ramadan", "Schawwal", "Dhul-Hijja", "Rajab"],
-          answer: 0
-        }
-      ]
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HBVC Namaz Vakitleri - Duisburg Hochfeld</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background-color: #f9f9f9;
+      color: #1b3e2e;
     }
-  };
+    main {
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .lang-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+    .lang-switcher button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .prayer-times {
+      background: #d9f0d9;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgb(27 62 46 / 0.25);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    .prayer-time {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-weight: 600;
+    }
+    .countdown {
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .hadith {
+      background-color: #1b3e2e;
+      color: #d9f0d9;
+      border-radius: 14px;
+      padding: 1rem 1.5rem;
+      font-style: italic;
+      font-size: 1.05rem;
+      box-shadow: 0 3px 10px rgb(27 62 46 / 0.6);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .hadith strong {
+      font-weight: 700;
+      color: #a8d5a8;
+    }
+    .clock {
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="lang-switcher">
+      <button onclick="setLang('tr')" title="Türkçe"><img src="https://flagcdn.com/w40/tr.png" width="30" /></button>
+      <button onclick="setLang('de')" title="Deutsch"><img src="https://flagcdn.com/w40/de.png" width="30" /></button>
+    </div>
 
-  // --- Global State ---
-  let currentLang = 'tr';
-  let countdownVisible = false;
-  let countdownInterval = null;
+    <div class="clock" id="current-time">Saat Yükleniyor...</div>
 
-  // --- Elementler ---
-  const btnTR = document.getElementById('btnTR');
-  const btnDE = document.getElementById('btnDE');
-  const prayerTitle = document.getElementById('prayerTitle');
-  const prayerTimesList = document.getElementById('prayerTimesList');
-  const hadithEl = document.getElementById('hadith');
-  const countdownEl = document.getElementById('countdown');
-  const toggleCountdownBtn = document.getElementById('toggleCountdownBtn');
-  const currentTimeEl = document.getElementById('current-time');
+    <div class="prayer-times">
+      <h2>HBVC Namaz Vakitleri</h2>
+      <div class="prayer-time"><span>Sabah</span><span id="sabah">03:44</span></div>
+      <div class="prayer-time"><span>İmsak</span><span id="imsak">05:17</span></div>
+      <div class="prayer-time"><span>Öğlen</span><span id="dhuhr">13:36</span></div>
+      <div class="prayer-time"><span>İkindi</span><span id="asr">17:53</span></div>
+      <div class="prayer-time"><span>Akşam</span><span id="maghrib">21:45</span></div>
+      <div class="prayer-time"><span>Yatsı</span><span id="isha">23:07</span></div>
+    </div>
 
-  const quizTitle = document.getElementById('quizTitle');
-  const quizQuestion = document.getElementById('quizQuestion');
-  const quizOptions = document.getElementById('quizOptions');
-  const quizMessage = document.getElementById('quizMessage');
+    <div class="countdown" id="countdown">Geri Sayım Yükleniyor...</div>
 
-  // --- Fonksiyonlar ---
+    <div class="hadith">
+      <strong id="hadith-title">Günün Hadisi:</strong>
+      <span id="hadith-text">“İnsanların en hayırlısı, insanlara en faydalı olandır.” (Hz. Muhammed)</span>
+    </div>
+  </main>
 
-  function updateLanguage(lang) {
-    currentLang = lang;
-    const data = langData[lang];
-
-    // Dil butonları aktiflik durumu
-    btnTR.classList.toggle('active', lang === 'tr');
-    btnDE.classList.toggle('active', lang === 'de');
-    btnTR.setAttribute('aria-pressed', lang === 'tr');
-    btnDE.setAttribute('aria-pressed', lang === 'de');
-
-    // Başlık ve Hadis
-    prayerTitle.textContent = data.prayerTitle;
-    hadithEl.innerHTML = data.hadith;
-    quizTitle.textContent = data.quizTitle;
-    toggleCountdownBtn.textContent = countdownVisible ? data.countdownBtnHide : data.countdownBtnShow;
-
-    // Namaz Vakitleri Listele
-    renderPrayerTimes(data.prayers);
-
-    // Quiz Hazırla
-    loadQuiz();
-  }
-
-  function renderPrayerTimes(prayers) {
-    prayerTimesList.innerHTML = '';
-    prayers.forEach(({name, time}) => {
-      const div = document.createElement('div');
-      div.className = 'prayer-time';
-      div.textContent = `${name}: ${time}`;
-      prayerTimesList.appendChild(div);
-    });
-  }
-
-  function updateCurrentTime() {
-    const now = new Date();
-    // Saat: 24 saat formatı, dakikalar iki basamaklı
-    const hours = now.getHours().toString().padStart(2,'0');
-    const minutes = now.getMinutes().toString().padStart(2,'0');
-    const seconds = now.getSeconds().toString().padStart(2,'0');
-    currentTimeEl.textContent = `${hours}:${minutes}:${seconds}`;
-  }
-
-  // Geri sayım için en yakın vakti bul
-  function getNextPrayerTime() {
-    const now = new Date();
-    const prayers = langData[currentLang].prayers;
-    // Vakitleri tarih objesine çevir
-    const todayStr = now.toISOString().slice(0,10); // yyyy-mm-dd
-    let nextPrayerDate = null;
-    for (const p of prayers) {
-      const [h,m] = p.time.split(':').map(Number);
-      const prayerDate = new Date(`${todayStr}T${p.time}:00`);
-      if (prayerDate > now) {
-        nextPrayerDate = prayerDate;
-        break;
+  <script>
+    const hadiths = {
+      tr: {
+        title: "Günün Hadisi:",
+        text: "“İnsanların en hayırlısı, insanlara en faydalı olandır.” (Hz. Muhammed)"
+      },
+      de: {
+        title: "Hadith des Tages:",
+        text: "„Der beste Mensch ist derjenige, der den Menschen am nützlichsten ist.“ (Prophet Muhammad)"
       }
+    };
+
+    function setLang(lang) {
+      document.getElementById("hadith-title").textContent = hadiths[lang].title;
+      document.getElementById("hadith-text").textContent = hadiths[lang].text;
     }
-    // Eğer bugünün vakti yoksa (örneğin gece geç saat) yarınki ilk vakti al
-    if (!nextPrayerDate) {
-      // Yarın için ilk vakti al
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() +1);
-      const tomorrowStr = tomorrow.toISOString().slice(0,10);
-      const firstPrayerTime = prayers[0].time;
-      nextPrayerDate = new Date(`${tomorrowStr}T${firstPrayerTime}:00`);
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleTimeString('tr-TR', { hour12: false });
     }
-    return nextPrayerDate;
-  }
-
-  function updateCountdown() {
-    const now = new Date();
-    const nextPrayer = getNextPrayerTime();
-    let diff = Math.floor((nextPrayer - now)/1000); // saniye
-    if(diff < 0) diff = 0;
-
-    const hours = Math.floor(diff / 3600);
-    const minutes = Math.floor((diff % 3600) / 60);
-    const seconds = diff % 60;
-
-    const label = langData[currentLang].countdownLabel;
-
-    countdownEl.textContent = `${label} ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-  }
-
-  function startCountdown() {
-    if(countdownInterval) clearInterval(countdownInterval);
-    countdownEl.hidden = false;
-    toggleCountdownBtn.setAttribute('aria-pressed', 'true');
-    toggleCountdownBtn.textContent = langData[currentLang].countdownBtnHide;
-    countdownInterval = setInterval(updateCountdown, 1000);
-    updateCountdown();
-  }
-
-  function stopCountdown() {
-    if(countdownInterval) {
-      clearInterval(countdownInterval);
-      countdownInterval = null;
-    }
-    countdownEl.hidden = true;
-    toggleCountdownBtn.setAttribute('aria-pressed', 'false');
-    toggleCountdownBtn.textContent = langData[currentLang].countdownBtnShow;
-  }
-
-  function toggleCountdown() {
-    countdownVisible = !countdownVisible;
-    if(countdownVisible) startCountdown();
-    else stopCountdown();
-  }
-
-  // --- Quiz Fonksiyonları ---
-
-  // Günlük quiz için tarih bazlı index
-  function getDailyQuizIndex() {
-    const today = new Date();
-    return today.getDate() % langData[currentLang].quiz.length;
-  }
-
-  function loadQuiz() {
-    quizMessage.textContent = '';
-    quizOptions.innerHTML = '';
-    const data = langData[currentLang];
-    const quizData = data.quiz[getDailyQuizIndex()];
-    quizQuestion.textContent = quizData.question;
-
-    quizData.options.forEach((opt, i) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = opt;
-      btn.setAttribute('data-index', i);
-      btn.addEventListener('click', () => handleQuizAnswer(i, quizData.answer));
-      quizOptions.appendChild(document.createElement('li')).appendChild(btn);
-    });
-  }
-
-  function handleQuizAnswer(selectedIndex, correctIndex) {
-    const buttons = quizOptions.querySelectorAll('button');
-    quizMessage.textContent = '';
-    buttons.forEach((btn, i) => {
-      btn.disabled = true;
-      if(i === correctIndex) {
-        btn.classList.add('correct');
-      } else if(i === selectedIndex) {
-        btn.classList.add('incorrect');
-      }
-    });
-    if(selectedIndex === correctIndex) {
-      quizMessage.textContent = currentLang === 'tr' ? "Tebrikler, doğru cevap!" : "Glückwunsch, richtige Antwort!";
-    } else {
-      quizMessage.textContent = currentLang === 'tr' ? "Maalesef, yanlış cevap." : "Leider falsch.";
-    }
-  }
-
-  // --- Dil Seçici Eventleri ---
-  btnTR.addEventListener('click', () => {
-    if(currentLang !== 'tr') updateLanguage('tr');
-  });
-  btnDE.addEventListener('click', () => {
-    if(currentLang !== 'de') updateLanguage('de');
-  });
-
-  // --- Buton Eventleri ---
-  toggleCountdownBtn.addEventListener('click', toggleCountdown);
-
-  // --- Sayfa yüklenince ---
-  function init() {
-    updateLanguage(currentLang);
-    updateCurrentTime();
-    setInterval(updateCurrentTime, 1000);
-  }
-
-  init();
-
-})();
-</script>
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
