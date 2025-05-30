@@ -18,153 +18,166 @@
       margin: 2rem auto;
       padding: 0 1rem;
     }
-    .lang-switcher {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 1rem;
-    }
-    .lang-switcher button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
     .prayer-times {
       background: #d9f0d9;
       border-radius: 14px;
-      box-shadow: 0 4px 12px rgb(27 62 46 / 0.25);
-      padding: 1.5rem;
-      margin-top: 1rem;
+      box-shadow: 0 4px 12px rgba(27, 62, 46, 0.25);
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 2rem;
+    }
+    .prayer-times h2 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      font-size: 1.7rem;
     }
     .prayer-time {
       display: flex;
       justify-content: space-between;
       padding: 10px 0;
       font-weight: 600;
+      font-size: 1.15rem;
+      border-bottom: 1px solid #a8d5a8;
+    }
+    .prayer-time:last-child {
+      border-bottom: none;
     }
     .countdown {
       font-weight: 700;
       font-size: 1.3rem;
       text-align: center;
-      margin: 1.5rem 0;
-    }
-    .hadith {
-      background-color: #1b3e2e;
-      color: #d9f0d9;
-      border-radius: 14px;
-      padding: 1rem 1.5rem;
-      font-style: italic;
-      font-size: 1.05rem;
-      box-shadow: 0 3px 10px rgb(27 62 46 / 0.6);
-      max-width: 480px;
-      margin: 0 auto;
-    }
-    .hadith strong {
-      font-weight: 700;
-      color: #a8d5a8;
+      margin-bottom: 1.8rem;
     }
     .clock {
       font-size: 1.1rem;
       font-weight: 600;
       text-align: center;
+      margin-bottom: 1rem;
+    }
+    .language-switch {
+      text-align: center;
+      margin: 1rem;
+    }
+    .language-switch button {
+      font-size: 1rem;
+      margin: 0 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <div class="language-switch">
+    <button onclick="setLanguage('tr')">🇹🇷 Türkçe</button>
+    <button onclick="setLanguage('de')">🇩🇪 Deutsch</button>
+  </div>
+
   <main>
-    <div class="lang-switcher">
-      <button onclick="setLang('tr')" title="Türkçe"><img src="https://flagcdn.com/w40/tr.png" width="30" /></button>
-      <button onclick="setLang('de')" title="Deutsch"><img src="https://flagcdn.com/w40/de.png" width="30" /></button>
-    </div>
-
-    <div class="clock" id="current-time">Saat Yükleniyor...</div>
-
+    <div class="clock" id="current-time">Saat yükleniyor...</div>
     <div class="prayer-times">
-      <h2>HBVC Namaz Vakitleri</h2>
-      <div class="prayer-time"><span>Sabah</span><span id="sabah">03:44</span></div>
-      <div class="prayer-time"><span>İmsak</span><span id="imsak">05:17</span></div>
-      <div class="prayer-time"><span>Öğlen</span><span id="dhuhr">13:36</span></div>
-      <div class="prayer-time"><span>İkindi</span><span id="asr">17:53</span></div>
-      <div class="prayer-time"><span>Akşam</span><span id="maghrib">21:45</span></div>
-      <div class="prayer-time"><span>Yatsı</span><span id="isha">23:07</span></div>
+      <h2 id="title">HBVC Namaz Vakitleri</h2>
+      <div class="prayer-time"><span id="label-sabah">Sabah</span><span id="sabah">03:44</span></div>
+      <div class="prayer-time"><span id="label-imsak">İmsak</span><span id="imsak">05:17</span></div>
+      <div class="prayer-time"><span id="label-dhuhr">Öğlen</span><span id="dhuhr">13:36</span></div>
+      <div class="prayer-time"><span id="label-asr">İkindi</span><span id="asr">17:53</span></div>
+      <div class="prayer-time"><span id="label-maghrib">Akşam</span><span id="maghrib">21:45</span></div>
+      <div class="prayer-time"><span id="label-isha">Yatsı</span><span id="isha">23:07</span></div>
     </div>
-
-    <div class="countdown" id="countdown">Geri Sayım Yükleniyor...</div>
-
-    <div class="hadith">
-      <strong id="hadith-title">Günün Hadisi:</strong>
-      <span id="hadith-text">“İnsanların en hayırlısı, insanlara en faydalı olandır.” (Hz. Muhammed)</span>
-    </div>
+    <div class="countdown" id="countdown">Geri sayım hesaplanıyor...</div>
   </main>
 
-  <script>
-    const hadiths = {
-      tr: {
-        title: "Günün Hadisi:",
-        text: "“İnsanların en hayırlısı, insanlara en faydalı olandır.” (Hz. Muhammed)"
-      },
-      de: {
-        title: "Hadith des Tages:",
-        text: "„Der beste Mensch ist derjenige, der den Menschen am nützlichsten ist.“ (Prophet Muhammad)"
-      }
-    };
+<script>
+  const prayerTimes = {
+    sabah: "03:44",
+    imsak: "05:17",
+    dhuhr: "13:36",
+    asr: "17:53",
+    maghrib: "21:45",
+    isha: "23:07"
+  };
 
-    function setLang(lang) {
-      document.getElementById("hadith-title").textContent = hadiths[lang].title;
-      document.getElementById("hadith-text").textContent = hadiths[lang].text;
+  const labels = {
+    tr: {
+      sabah: "Sabah",
+      imsak: "İmsak",
+      dhuhr: "Öğlen",
+      asr: "İkindi",
+      maghrib: "Akşam",
+      isha: "Yatsı",
+      title: "HBVC Namaz Vakitleri",
+      countdown: "Geri Sayım"
+    },
+    de: {
+      sabah: "Morgendämmerung",
+      imsak: "Imsak",
+      dhuhr: "Mittag",
+      asr: "Nachmittag",
+      maghrib: "Abend",
+      isha: "Nacht",
+      title: "HBVC Gebetszeiten",
+      countdown: "Countdown"
+    }
+  };
+
+  let currentLang = "tr";
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    const l = labels[lang];
+    document.getElementById("label-sabah").textContent = l.sabah;
+    document.getElementById("label-imsak").textContent = l.imsak;
+    document.getElementById("label-dhuhr").textContent = l.dhuhr;
+    document.getElementById("label-asr").textContent = l.asr;
+    document.getElementById("label-maghrib").textContent = l.maghrib;
+    document.getElementById("label-isha").textContent = l.isha;
+    document.getElementById("title").textContent = l.title;
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('current-time').textContent =
+      now.toLocaleTimeString('tr-TR', { hour12: false });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function updateCountdown() {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const times = Object.entries(prayerTimes).map(([key, value]) => {
+      const [h, m] = value.split(":").map(Number);
+      const time = new Date(today);
+      time.setHours(h, m, 0, 0);
+      return { key, time };
+    });
+
+    let nextTime = times.find(p => p.time > now);
+    if (!nextTime) {
+      const [h, m] = prayerTimes.sabah.split(":").map(Number);
+      const nextDay = new Date(today);
+      nextDay.setDate(today.getDate() + 1);
+      nextDay.setHours(h, m, 0, 0);
+      nextTime = { key: "sabah", time: nextDay };
     }
 
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('current-time').textContent = now.toLocaleTimeString('tr-TR', { hour12: false });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    const diff = nextTime.time - now;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-    const vakitler = {
-      sabah: "03:44",
-      imsak: "05:17",
-      dhuhr: "13:36",
-      asr: "17:53",
-      maghrib: "21:45",
-      isha: "23:07"
-    };
+    const l = labels[currentLang];
+    document.getElementById("countdown").textContent =
+      `${l.countdown}: ${hours}s ${mins}d ${secs}s (${l[nextTime.key]})`;
+  }
 
-    function updateCountdown() {
-      const now = new Date();
-      let enYakinVakitZamani = null;
-      let enYakinVakitAdi = "";
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
 
-      for (const [vakitAdi, saatStr] of Object.entries(vakitler)) {
-        const [saat, dakika] = saatStr.split(":").map(Number);
-        const vakitZamani = new Date(now.getFullYear(), now.getMonth(), now.getDate(), saat, dakika);
-
-        if (vakitZamani > now) {
-          enYakinVakitZamani = vakitZamani;
-          enYakinVakitAdi = vakitAdi;
-          break;
-        }
-      }
-
-      // Gece yarısından sonra (ertesi güne geçiş)
-      if (!enYakinVakitZamani) {
-        const [saat, dakika] = vakitler.sabah.split(":").map(Number);
-        enYakinVakitZamani = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, saat, dakika);
-        enYakinVakitAdi = "sabah";
-      }
-
-      const fark = enYakinVakitZamani - now;
-      const saat = Math.floor(fark / (1000 * 60 * 60));
-      const dakika = Math.floor((fark % (1000 * 60 * 60)) / (1000 * 60));
-      const saniye = Math.floor((fark % (1000 * 60)) / 1000);
-
-      document.getElementById("countdown").textContent =
-        `Sonraki vakit (${enYakinVakitAdi}): ${String(saat).padStart(2, '0')}:${String(dakika).padStart(2, '0')}:${String(saniye).padStart(2, '0')}`;
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-  </script>
+  // Başlangıç dili Türkçe
+  setLanguage("tr");
+</script>
 </body>
 </html>
