@@ -1,232 +1,258 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head> 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#000000" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HBVC Namaz Vakitleri - Duisburg Hochfeld</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; padding: 0;
-      font-family: 'Montserrat', sans-serif;
-      background-color: #f9f9f9;
-      color: #1b3e2e;
-      transition: background-color 0.4s, color 0.4s;
-    }
-    body.dark {
-      background-color: #121a13;
-      color: #c9d6c2;
-    }
-    main {
-      max-width: 480px;
-      margin: 2rem auto 3rem;
-      padding: 0 1rem;
-    }
-    .prayer-times {
-      background: #d9f0d9;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgb(27 62 46 / 0.25);
-      padding: 1.5rem 1.8rem;
-      margin-bottom: 2rem;
-    }
-    body.dark .prayer-times {
-      background: #26422c;
-      box-shadow: 0 4px 12px rgb(54 92 61 / 0.5);
-    }
-    .prayer-times h2 {
-      text-align: center;
-      font-weight: 700;
-      color: #1b3e2e;
-      margin-bottom: 1.2rem;
-      font-size: 1.7rem;
-    }
-    body.dark .prayer-times h2 {
-      color: #c4d5b8;
-    }
-    .prayer-time {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      font-weight: 600;
-      font-size: 1.15rem;
-      border-bottom: 1px solid #a8d5a8;
-    }
-    .prayer-time:last-child {
-      border-bottom: none;
-    }
-    body.dark .prayer-time {
-      border-color: #5b7a56;
-    }
-    .countdown {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #1b3e2e;
-      text-align: center;
-      margin-bottom: 1.8rem;
-      user-select: none;
-    }
-    body.dark .countdown {
-      color: #aacc99;
-    }
-    .clock {
-      font-size: 1.1rem;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .hadith {
-      background-color: #1b3e2e;
-      color: #d9f0d9;
-      border-radius: 14px;
-      padding: 1rem 1.5rem;
-      font-style: italic;
-      font-size: 1.05rem;
-      box-shadow: 0 3px 10px rgb(27 62 46 / 0.6);
-      user-select: none;
-      max-width: 480px;
-      margin: 0 auto 1rem;
-    }
-    body.dark .hadith {
-      background-color: #2f5b33;
-      color: #e2f1d6;
-      box-shadow: 0 3px 10px rgb(54 92 61 / 0.8);
-    }
-    .hadith strong {
-      font-weight: 700;
-      color: #a8d5a8;
-    }
-    #toggleCountdownBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 0.5rem 1rem;
-      font-weight: 700;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1rem;
-      background-color: #1b3e2e;
-      color: #d9f0d9;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      user-select: none;
-      display: none;
-      box-shadow: 0 4px 12px rgba(27, 62, 46, 0.4);
-      transition: background-color 0.3s;
-    }
-    #toggleCountdownBtn:hover {
-      background-color: #26422c;
-    }
-    #devPanel {
-      display: none;
-      position: fixed;
-      bottom: 70px;
-      right: 20px;
-      background: #1b3e2e;
-      color: #d9f0d9;
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(27, 62, 46, 0.7);
-      font-family: 'Montserrat', sans-serif;
-      z-index: 9999;
-      user-select: none;
-    }
-    #devPanel button {
-      background-color: #26422c;
-      color: #d9f0d9;
-      border: none;
-      padding: 8px 16px;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    #devPanel button:hover {
-      background-color: #3b6a39;
-    }
-  </style>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HBVC Namaz Vakitleri & Günlük Quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f9f9f9;
+    color: #1b3e2e;
+    transition: background-color 0.4s, color 0.4s;
+  }
+  body.dark {
+    background-color: #121a13;
+    color: #c9d6c2;
+  }
+  main {
+    max-width: 480px;
+    margin: 2rem auto 3rem;
+    padding: 0 1rem;
+  }
+  /* Dil Seçici */
+  #langSelector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 1rem;
+  }
+  #langSelector button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 2rem;
+    user-select: none;
+    transition: transform 0.2s;
+    filter: grayscale(0.3);
+  }
+  #langSelector button.active {
+    filter: none;
+    transform: scale(1.2);
+  }
+  #langSelector button:hover {
+    transform: scale(1.3);
+    filter: none;
+  }
+  /* Namaz Vakitleri */
+  .prayer-times {
+    background: #d9f0d9;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgb(27 62 46 / 0.25);
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 2rem;
+  }
+  body.dark .prayer-times {
+    background: #26422c;
+    box-shadow: 0 4px 12px rgb(54 92 61 / 0.5);
+  }
+  .prayer-times h2 {
+    text-align: center;
+    font-weight: 700;
+    color: #1b3e2e;
+    margin-bottom: 1.2rem;
+    font-size: 1.7rem;
+  }
+  body.dark .prayer-times h2 {
+    color: #c4d5b8;
+  }
+  .prayer-time {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-weight: 600;
+    font-size: 1.15rem;
+    border-bottom: 1px solid #a8d5a8;
+  }
+  .prayer-time:last-child {
+    border-bottom: none;
+  }
+  body.dark .prayer-time {
+    border-color: #5b7a56;
+  }
+  /* Geri Sayım */
+  .countdown {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #1b3e2e;
+    text-align: center;
+    margin-bottom: 1.8rem;
+    user-select: none;
+  }
+  body.dark .countdown {
+    color: #aacc99;
+  }
+  /* Saat */
+  .clock {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  /* Hadis */
+  .hadith {
+    background-color: #1b3e2e;
+    color: #d9f0d9;
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    font-style: italic;
+    font-size: 1.05rem;
+    box-shadow: 0 3px 10px rgb(27 62 46 / 0.6);
+    user-select: none;
+    max-width: 480px;
+    margin: 0 auto 1rem;
+  }
+  body.dark .hadith {
+    background-color: #2f5b33;
+    color: #e2f1d6;
+    box-shadow: 0 3px 10px rgb(54 92 61 / 0.8);
+  }
+  .hadith strong {
+    font-weight: 700;
+    color: #a8d5a8;
+  }
+  /* Butonlar */
+  #toggleCountdownBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    background-color: #1b3e2e;
+    color: #d9f0d9;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    display: none;
+    box-shadow: 0 4px 12px rgba(27, 62, 46, 0.4);
+    transition: background-color 0.3s;
+    z-index: 999;
+  }
+  #toggleCountdownBtn:hover {
+    background-color: #26422c;
+  }
+  #devPanel {
+    display: none;
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    background: #1b3e2e;
+    color: #d9f0d9;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(27, 62, 46, 0.7);
+    font-family: 'Montserrat', sans-serif;
+    z-index: 9999;
+    user-select: none;
+  }
+  #devPanel button {
+    background-color: #26422c;
+    color: #d9f0d9;
+    border: none;
+    padding: 8px 16px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #devPanel button:hover {
+    background-color: #3b6a39;
+  }
+  /* Quiz */
+  #quizContainer {
+    background: #d9f0d9;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgb(27 62 46 / 0.25);
+    padding: 1.5rem 1.8rem;
+    margin-top: 2rem;
+  }
+  body.dark #quizContainer {
+    background: #26422c;
+    box-shadow: 0 4px 12px rgb(54 92 61 / 0.5);
+  }
+  #quizContainer h3 {
+    text-align: center;
+    font-weight: 700;
+    color: #1b3e2e;
+    margin-bottom: 1rem;
+  }
+  body.dark #quizContainer h3 {
+    color: #c4d5b8;
+  }
+  #quizQuestion {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  #quizOptions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  #quizOptions li {
+    margin-bottom: 0.7rem;
+  }
+  #quizOptions button {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: #e0f0e0;
+    color: #1b3e2e;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  #quizOptions button:hover {
+    background-color: #c2e2c2;
+  }
+  #quizOptions button.correct {
+    background-color: #a4dca4;
+    border-color: #4caf50;
+    color: #114411;
+  }
+  #quizOptions button.incorrect {
+    background-color: #f3b2b2;
+    border-color: #e53935;
+    color: #6a1b1b;
+  }
+  #quizMessage {
+    margin-top: 1rem;
+    font-weight: 700;
+    text-align: center;
+    min-height: 1.5em;
+  }
+</style>
 </head>
 <body>
-  <main>
-    <div class="clock" id="current-time">Saat Yükleniyor...</div>
-    <div class="prayer-times" aria-label="Namaz Vakitleri">
-      <h2>HBVC Namaz Vakitleri</h2>
-      <div class="prayer-time"><span>Sabah</span><span id="sabah">03:44</span></div>
-      <div class="prayer-time"><span>İmsak</span><span id="imsak">05:17</span></div>
-      <div class="prayer-time"><span>Öğlen</span><span id="dhuhr">13:36</span></div>
-      <div class="prayer-time"><span>İkindi</span><span id="asr">17:53</span></div>
-      <div class="prayer-time"><span>Akşam</span><span id="maghrib">21:45</span></div>
-      <div class="prayer-time"><span>Yatsı</span><span id="isha">23:07</span></div>
-    </div>
-    <div class="countdown" id="countdown">Geri Sayım Yükleniyor...</div>
-    <div class="hadith" aria-label="Günün Hadisi">
-      <strong id="hadith-title">Günün Hadisi:</strong> 
-      <span id="hadith-text">“İnsanların en hayırlısı, insanlara en faydalı olandır.” (Hz. Muhammed)</span>
-    </div>
-    <button id="toggleCountdownBtn" title="Geri sayımı aç/kapat">Geri Sayımı Aç/Kapat</button>
-    <div id="devPanel">
-      <button id="btnReload">Sayfayı Yenile</button>
-    </div>
-  </main>
-<script>
-  // Saat güncelleme
-  const currentTimeElem = document.getElementById('current-time');
-  function updateClock() {
-    const now = new Date();
-    currentTimeElem.textContent = now.toLocaleTimeString('tr-TR', { hour12: false });
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
+<main>
 
-  // Namaz vakitleri verisi
-  const prayerTimesRaw = {
-    sabah: "03:44",
-    imsak: "05:17",
-    dhuhr: "13:36",
-    asr: "17:53",
-    maghrib: "21:45",
-    isha: "23:07"
-  };
-  const prayerOrder = ["sabah", "imsak", "dhuhr", "asr", "maghrib", "isha"];
-  const prayerNamesTR = {
-    sabah: "Sabah", imsak: "İmsak", dhuhr: "Öğlen",
-    asr: "İkindi", maghrib: "Akşam", isha: "Yatsı"
-  };
+  <!-- Dil Seçici -->
+  <div id="langSelector" aria-label="Dil seçici">
+    <button id="btnTR" title="Türkçe" aria-pressed="true" role="radio" aria-label="Türkçe">🇹🇷</button>
+    <button id="btnDE" title="Deutsch" aria-pressed="false" role="radio" aria-label="Almanca">🇩🇪</button>
+  </div>
 
-  // Geri sayım
-  const countdownElem = document.getElementById("countdown");
-  let countdownActive = true;
+  <!-- Saat -->
+  <div class="clock" id="current-time" aria-live="polite" aria-atomic="true">Saat Yükleniyor...</div>
 
-  function getPrayerDate(timeStr, dayOffset = 0) {
-    const [h,m] = timeStr.split(":").map(Number);
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset, h, m, 0, 0);
-  }
-
-  function updateCountdown(){
-    if(!countdownActive){
-      countdownElem.textContent = "Geri sayım kapalı.";
-      return;
-    }
-    const now = new Date();
-    let todayPrayers = prayerOrder.map(key => ({
-      key,
-      time: getPrayerDate(prayerTimesRaw[key])
-    }));
-    if(now > todayPrayers[todayPrayers.length - 1].time){
-      todayPrayers = prayerOrder.map(key => ({
-        key,
-        time: getPrayerDate(prayerTimesRaw[key], 1)
-      }));
-    }
-    let nextPrayer = todayPrayers.find(p => p.time > now);
-    if(!nextPrayer){
-      countdownElem.textContent = "Namaz vakitleri henüz belirlenmedi.";
-      return;
-    }
-    const diffMs = nextPrayer.time - now;
-    const diffSec = Math.floor(diffMs / 1000);
-    const h = Math.floor(diffSec / 3600);
-    const m = Math.floor((diffSec %
+  <!-- Namaz Vakitleri -->
+  <section class="prayer-times" aria-label="Namaz Vakitleri">
+    <h2 id="prayerTitle">HBVC Namaz Vakitleri</h2>
+    <div class
