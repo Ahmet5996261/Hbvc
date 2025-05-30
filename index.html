@@ -121,6 +121,50 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    const vakitler = {
+      sabah: "03:44",
+      imsak: "05:17",
+      dhuhr: "13:36",
+      asr: "17:53",
+      maghrib: "21:45",
+      isha: "23:07"
+    };
+
+    function updateCountdown() {
+      const now = new Date();
+      let enYakinVakitZamani = null;
+      let enYakinVakitAdi = "";
+
+      for (const [vakitAdi, saatStr] of Object.entries(vakitler)) {
+        const [saat, dakika] = saatStr.split(":").map(Number);
+        const vakitZamani = new Date(now.getFullYear(), now.getMonth(), now.getDate(), saat, dakika);
+
+        if (vakitZamani > now) {
+          enYakinVakitZamani = vakitZamani;
+          enYakinVakitAdi = vakitAdi;
+          break;
+        }
+      }
+
+      // Gece yarısından sonra (ertesi güne geçiş)
+      if (!enYakinVakitZamani) {
+        const [saat, dakika] = vakitler.sabah.split(":").map(Number);
+        enYakinVakitZamani = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, saat, dakika);
+        enYakinVakitAdi = "sabah";
+      }
+
+      const fark = enYakinVakitZamani - now;
+      const saat = Math.floor(fark / (1000 * 60 * 60));
+      const dakika = Math.floor((fark % (1000 * 60 * 60)) / (1000 * 60));
+      const saniye = Math.floor((fark % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").textContent =
+        `Sonraki vakit (${enYakinVakitAdi}): ${String(saat).padStart(2, '0')}:${String(dakika).padStart(2, '0')}:${String(saniye).padStart(2, '0')}`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
   </script>
 </body>
 </html>
